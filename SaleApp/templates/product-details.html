@@ -3,5 +3,13 @@
 {%block title%}Chi tiết sản phẩm{%endblock%}
 
 {%block content%}
-{{prod}}
+<div class="row mt-3">
+    <div class="col-md-5 col-12">
+        <img src="{{prod.image}}" class="img-fluid">
+    </div>
+    <div class="col-md-7 col-12">
+        <h1 class="text-info">{{prod.name}}</h1>
+        <h3 class="text-danger">{{prod.price}} VND</h3>
+    </div>
+</div>
 {%endblock%}
