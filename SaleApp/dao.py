@@ -1,11 +1,25 @@
+import hashlib
 import json
-from models import Category, Product
+from SaleApp import db
+from models import Category, Product, User
 
 
 def load_categories():
     # with open("data/category.json", encoding='utf-8') as f:
     #     return json.load(f)
     return Category.query.all()
+
+def add_user(name, username, password, avatar):
+    u = User(name=name, username=username, password=str(hashlib.md5(password.encode('utf-8')).hexdigest()), avatar=avatar)
+    db.session.add(u)
+    db.session.commit()
+
+def get_user_by_id(user_id):
+    return User.query.get(user_id)
+
+def auth_user(username, password):
+    password = str(hashlib.md5(password.encode('utf-8')).hexdigest())
+    return User.query.filter(User.username.__eq__(username), User.password.__eq__(password)).first()
 
 def load_products(q=None, cate_id=None):
     # with open("data/products.json", encoding='utf-8') as f:
