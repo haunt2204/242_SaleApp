@@ -1,6 +1,6 @@
 import hashlib
 import json
-from SaleApp import db
+from SaleApp import db, app
 from models import Category, Product, User
 
 
@@ -17,11 +17,14 @@ def add_user(name, username, password, avatar):
 def get_user_by_id(user_id):
     return User.query.get(user_id)
 
+def count_product():
+    return Product.query.count()
+
 def auth_user(username, password):
     password = str(hashlib.md5(password.encode('utf-8')).hexdigest())
     return User.query.filter(User.username.__eq__(username), User.password.__eq__(password)).first()
 
-def load_products(q=None, cate_id=None):
+def load_products(q=None, cate_id=None, page=None):
     # with open("data/products.json", encoding='utf-8') as f:
     #     products = json.load(f)
     #     if q:
@@ -36,6 +39,11 @@ def load_products(q=None, cate_id=None):
         query = query.filter(Product.name.contains(q))
     if cate_id:
         query = query.filter(Product.cate_id.__eq__(cate_id))
+
+    if page:
+        size = app.config["PAGE_SIZE"]
+        start = (int(page)-1)*size
+        query = query.slice(start, start+size)
 
     return query.all()
 

@@ -9,6 +9,8 @@ app.secret_key = "%$@%^@%#^VGHGD"
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:root@localhost/saledb?charset=utf8mb4"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
+app.config["PAGE_SIZE"] = 8
+
 db = SQLAlchemy(app)
 login = LoginManager(app)
 

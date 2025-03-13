@@ -14,7 +14,11 @@ class Base(db.Model):
     __abstract__ = True
     id = Column(Integer, primary_key=True, autoincrement=True)
 
+    def __str__(self):
+        return self.name
+
 class User(Base, UserMixin):
+    __table_name__ = "users"
     name = Column(String(100))
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(50), nullable=False)
@@ -22,15 +26,11 @@ class User(Base, UserMixin):
     active = Column(Boolean, default=True)
     role = Column(Enum(UserEnum), default=UserEnum.USER)
 
-    def __str__(self):
-        return self.username
 
 class Category(Base):
     name = Column(String(50), nullable=False, unique=True)
     products = relationship('Product', backref="category", lazy=True)
 
-    def __str__(self):
-        return self.name
 
 
 class Product(Base):
@@ -42,7 +42,7 @@ class Product(Base):
 
 if __name__ =="__main__":
     with app.app_context():
-        db.create_all()
+        # db.create_all()
         # c1 = Category(name="Mobile")
         # c2 = Category(name="Tablet")
         # c3 = Category(name="Laptop")
@@ -54,10 +54,10 @@ if __name__ =="__main__":
         #     for p in products:
         #         prod = Product(**p)
         #         db.session.add(prod)
-        #
-        # db.session.commit()
-        import hashlib
-        u = User(name="Hau Nguyen", username="user", password=str(hashlib.md5("123".encode('utf-8')).hexdigest()))
 
-        db.session.add(u)
+        import hashlib
+        # u = User(name="Hau Nguyen", username="user", password=str(hashlib.md5("123".encode('utf-8')).hexdigest()))
+        u2 = User(name="Hau Nguyen", username="admin", password=str(hashlib.md5("123".encode('utf-8')).hexdigest()),role=UserEnum.ADMIN)
+        # db.session.add(u)
+        db.session.add(u2)
         db.session.commit()

@@ -1,6 +1,8 @@
+import math
+
 from flask import render_template, request, redirect
 import dao
-from SaleApp import app, login
+from SaleApp import app, login, admin
 from flask_login import login_user, current_user, logout_user
 import cloudinary.uploader
 
@@ -9,8 +11,9 @@ import cloudinary.uploader
 def index():
     q = request.args.get("q")
     cate_id = request.args.get("category_id")
-    products = dao.load_products(q=q, cate_id=cate_id)
-    return render_template("index.html", products=products)
+    page = request.args.get("page")
+    products = dao.load_products(q=q, cate_id=cate_id, page=page)
+    return render_template("index.html", products=products, pages=int(math.ceil(dao.count_product()/app.config["PAGE_SIZE"])))
 
 @app.route('/products/<int:id>')
 def details(id):
@@ -44,6 +47,17 @@ def login_my_user():
 
     return render_template('login.html', err_msg=err_msg)
 
+@app.route('/login-admin', methods=['post'])
+def login_admin_process():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    user = dao.auth_user(username=username, password=password)
+    if user:
+        login_user(user)
+    else:
+        err_msg = "Tài khoản hoặc mật khẩu không khớp!"
+    return redirect('/admin')
 
 @login.user_loader
 def get_user(user_id):
@@ -76,4 +90,5 @@ def register():
     return render_template('register.html', err_msg=err_msg)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    with app.app_context():
+        app.run(debug=True)
